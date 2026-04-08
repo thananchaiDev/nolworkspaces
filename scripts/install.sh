@@ -116,14 +116,11 @@ install_ecc_rules() {
 configure_ecc_env() {
   step "Configuring CLAUDE_PLUGIN_ROOT"
   SETTINGS="$HOME/.claude/settings.json"
-  ECC_CACHE="$HOME/.claude/plugins/cache/everything-claude-code"
-  if [ ! -d "$ECC_CACHE" ]; then
-    warn "ECC plugin cache not found — skipping env config"
+  ECC_PLUGIN_ROOT="$HOME/.claude/ecc-source"
+  if [ ! -d "$ECC_PLUGIN_ROOT" ]; then
+    warn "ecc-source not found — skipping env config"
     return
   fi
-  ECC_ORG=$(ls "$ECC_CACHE" | head -1)
-  ECC_VER=$(ls "$ECC_CACHE/$ECC_ORG" 2>/dev/null | sort -V | tail -1)
-  ECC_PLUGIN_ROOT="$ECC_CACHE/$ECC_ORG/$ECC_VER"
   if ! command -v jq &>/dev/null; then
     warn "jq not found — skipping env config"
     return

@@ -136,13 +136,8 @@ function Install-EccRules {
 function Configure-EccEnv {
     Step 'Configuring CLAUDE_PLUGIN_ROOT'
     $settings = Join-Path $HOME '.claude\settings.json'
-    $eccCache = Join-Path $HOME '.claude\plugins\cache\everything-claude-code'
-    if (-not (Test-Path $eccCache)) { Warn 'ECC plugin cache not found — skipping'; return }
-    $org = Get-ChildItem $eccCache | Select-Object -First 1
-    if (-not $org) { Warn 'ECC org dir not found — skipping'; return }
-    $ver = Get-ChildItem $org.FullName | Sort-Object Name | Select-Object -Last 1
-    if (-not $ver) { Warn 'ECC version dir not found — skipping'; return }
-    $eccPluginRoot = $ver.FullName
+    $eccPluginRoot = Join-Path $HOME '.claude\ecc-source'
+    if (-not (Test-Path $eccPluginRoot)) { Warn 'ecc-source not found — skipping'; return }
     if (-not (Test-Path $settings)) { '{}' | Set-Content -Path $settings -Encoding utf8 }
     $json = Get-Content $settings -Raw | ConvertFrom-Json
     if (-not $json.env) { $json | Add-Member -NotePropertyName env -NotePropertyValue (@{}) -Force }
