@@ -9,14 +9,14 @@ $NolworkspacesDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else 
 
 $RequiredMarketplaces = @(
     @{ Repo = 'thedotmack/claude-mem';                                  Name = 'thedotmack' }
-    @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'everything-claude-code' }
+    @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'ecc' }
     @{ Repo = 'https://github.com/anthropics/claude-plugins-official.git'; Name = 'claude-plugins-official' }
     @{ Repo = 'mksglu/context-mode';                                    Name = 'context-mode' }
 )
 
 $RequiredPlugins = @(
     'claude-mem@thedotmack'
-    'everything-claude-code@everything-claude-code'
+    'ecc@ecc'
     'frontend-design@claude-plugins-official'
     'superpowers@claude-plugins-official'
     'typescript-lsp@claude-plugins-official'
@@ -136,7 +136,7 @@ function Install-EccRules {
 function Configure-EccEnv {
     Step 'Configuring CLAUDE_PLUGIN_ROOT'
     $settings = Join-Path $HOME '.claude\settings.json'
-    $eccCache = Join-Path $HOME '.claude\plugins\cache\everything-claude-code'
+    $eccCache = Join-Path $HOME '.claude\plugins\cache\ecc'
     if (-not (Test-Path $eccCache)) { Warn 'ECC plugin cache not found — skipping'; return }
     $org = Get-ChildItem $eccCache | Select-Object -First 1
     if (-not $org) { Warn 'ECC org dir not found — skipping'; return }

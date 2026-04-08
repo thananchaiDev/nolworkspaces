@@ -11,14 +11,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REQUIRED_MARKETPLACES=(
   "thedotmack/claude-mem:thedotmack"
-  "affaan-m/everything-claude-code:everything-claude-code"
+  "affaan-m/everything-claude-code:ecc"
   "https://github.com/anthropics/claude-plugins-official.git:claude-plugins-official"
   "mksglu/context-mode:context-mode"
 )
 
 REQUIRED_PLUGINS=(
   "claude-mem@thedotmack"
-  "everything-claude-code@everything-claude-code"
+  "ecc@ecc"
   "frontend-design@claude-plugins-official"
   "superpowers@claude-plugins-official"
   "typescript-lsp@claude-plugins-official"
@@ -116,7 +116,7 @@ install_ecc_rules() {
 configure_ecc_env() {
   step "Configuring CLAUDE_PLUGIN_ROOT"
   SETTINGS="$HOME/.claude/settings.json"
-  ECC_CACHE="$HOME/.claude/plugins/cache/everything-claude-code"
+  ECC_CACHE="$HOME/.claude/plugins/cache/ecc"
   if [ ! -d "$ECC_CACHE" ]; then
     warn "ECC plugin cache not found — skipping env config"
     return
