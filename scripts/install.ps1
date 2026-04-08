@@ -9,14 +9,14 @@ $NolworkspacesDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else 
 
 $RequiredMarketplaces = @(
     @{ Repo = 'thedotmack/claude-mem';                                  Name = 'thedotmack' }
-    @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'everything-claude-code' }
     @{ Repo = 'https://github.com/anthropics/claude-plugins-official.git'; Name = 'claude-plugins-official' }
     @{ Repo = 'mksglu/context-mode';                                    Name = 'context-mode' }
 )
 
+# NOTE: everything-claude-code is NOT a Claude plugin marketplace — it is a
+# rules repo with its own install.sh. It is installed via Install-EccRules.
 $RequiredPlugins = @(
     'claude-mem@thedotmack'
-    'everything-claude-code@everything-claude-code'
     'superpowers@claude-plugins-official'
     'frontend-design@claude-plugins-official'
     'typescript-lsp@claude-plugins-official'
@@ -88,31 +88,49 @@ function Install-Dependencies {
     }
 }
 
+function Invoke-Quiet {
+    # Run a native command and swallow all output (stdout+stderr) without
+    # tripping $ErrorActionPreference='Stop' on stderr writes.
+    param([string]$File, [string[]]$Args)
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    try {
+        & $File @Args 2>&1 | Out-Null
+        return $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $prev
+    }
+}
+
 function Install-EccRules {
     Step 'Installing everything-claude-code rules (full profile)'
     $eccDir = Join-Path $HOME '.claude\ecc-source'
     if (Test-Path $eccDir) {
         Pending 'Updating ecc-source'
-        try { & git -C $eccDir pull --ff-only *> $null } catch { Warn 'pull failed, using existing' }
-        Done
+        $code = Invoke-Quiet 'git' @('-C', $eccDir, 'pull', '--ff-only')
+        if ($code -ne 0) { Done; Warn 'pull failed, using existing' } else { Done }
     } else {
         Pending 'Cloning ecc-source'
-        & git clone --depth 1 https://github.com/affaan-m/everything-claude-code.git $eccDir *> $null
+        $code = Invoke-Quiet 'git' @('clone', '--depth', '1', 'https://github.com/affaan-m/everything-claude-code.git', $eccDir)
+        if ($code -ne 0) { Write-Host ''; Warn "git clone failed (exit $code) — skipping ECC rules"; return }
         Done
     }
     Pending 'Installing rules'
     Push-Location $eccDir
     try {
-        & npm install --silent *> $null
+        Invoke-Quiet 'npm' @('install', '--silent') | Out-Null
         if (Test-Path './install.sh') {
             if (Has-Cmd 'bash') {
-                & bash ./install.sh --profile full *> $null
+                Invoke-Quiet 'bash' @('./install.sh', '--profile', 'full') | Out-Null
+                Done
             } else {
+                Write-Host ''
                 Warn 'bash not found — cannot run ECC install.sh on Windows; install Git Bash or WSL'
             }
+        } else {
+            Done
         }
     } finally { Pop-Location }
-    Done
 }
 
 function Configure-EccEnv {

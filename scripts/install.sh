@@ -11,14 +11,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REQUIRED_MARKETPLACES=(
   "thedotmack/claude-mem:thedotmack"
-  "affaan-m/everything-claude-code:everything-claude-code"
   "https://github.com/anthropics/claude-plugins-official.git:claude-plugins-official"
   "mksglu/context-mode:context-mode"
 )
 
+# NOTE: everything-claude-code is NOT a Claude plugin marketplace — it is a
+# rules repo with its own install.sh. It is installed via install_ecc_rules().
 REQUIRED_PLUGINS=(
   "claude-mem@thedotmack"
-  "everything-claude-code@everything-claude-code"
   "superpowers@claude-plugins-official"
   "frontend-design@claude-plugins-official"
   "typescript-lsp@claude-plugins-official"

@@ -9,7 +9,6 @@ $InstallDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else { Join
 
 $RemovePlugins = @(
     'claude-mem@thedotmack'
-    'everything-claude-code@everything-claude-code'
     'superpowers@claude-plugins-official'
     'frontend-design@claude-plugins-official'
     'typescript-lsp@claude-plugins-official'
@@ -18,7 +17,7 @@ $RemovePlugins = @(
 
 # NOTE: claude-plugins-official is intentionally excluded — it may be shared
 # with other plugins outside Nolworkspaces, so we leave it in place.
-$RemoveMarketplaces = @('thedotmack', 'everything-claude-code', 'context-mode')
+$RemoveMarketplaces = @('thedotmack', 'context-mode')
 
 # -- Output helpers ------------------------------------------------------------
 
