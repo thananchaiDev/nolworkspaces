@@ -9,16 +9,16 @@ $NolworkspacesDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else 
 
 $RequiredMarketplaces = @(
     @{ Repo = 'thedotmack/claude-mem';                                  Name = 'thedotmack' }
+    @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'everything-claude-code' }
     @{ Repo = 'https://github.com/anthropics/claude-plugins-official.git'; Name = 'claude-plugins-official' }
     @{ Repo = 'mksglu/context-mode';                                    Name = 'context-mode' }
 )
 
-# NOTE: everything-claude-code is NOT a Claude plugin marketplace — it is a
-# rules repo with its own install.sh. It is installed via Install-EccRules.
 $RequiredPlugins = @(
     'claude-mem@thedotmack'
-    'superpowers@claude-plugins-official'
+    'everything-claude-code@everything-claude-code'
     'frontend-design@claude-plugins-official'
+    'superpowers@claude-plugins-official'
     'typescript-lsp@claude-plugins-official'
     'context-mode@context-mode'
 )
@@ -82,7 +82,7 @@ function Install-Dependencies {
             Info "$name already installed"
         } else {
             Pending "Installing $plugin"
-            try { & claude plugin install $plugin --scope user 2>$null | Out-Null } catch { Warn "failed to install $plugin" }
+            try { & claude plugin install $plugin 2>$null | Out-Null } catch { Warn "failed to install $plugin" }
             Done
         }
     }
@@ -136,8 +136,13 @@ function Install-EccRules {
 function Configure-EccEnv {
     Step 'Configuring CLAUDE_PLUGIN_ROOT'
     $settings = Join-Path $HOME '.claude\settings.json'
-    $eccPluginRoot = Join-Path $HOME '.claude\ecc-source'
-    if (-not (Test-Path $eccPluginRoot)) { Warn 'ecc-source not found — skipping'; return }
+    $eccCache = Join-Path $HOME '.claude\plugins\cache\everything-claude-code'
+    if (-not (Test-Path $eccCache)) { Warn 'ECC plugin cache not found — skipping'; return }
+    $org = Get-ChildItem $eccCache | Select-Object -First 1
+    if (-not $org) { Warn 'ECC org dir not found — skipping'; return }
+    $ver = Get-ChildItem $org.FullName | Sort-Object Name | Select-Object -Last 1
+    if (-not $ver) { Warn 'ECC version dir not found — skipping'; return }
+    $eccPluginRoot = $ver.FullName
     if (-not (Test-Path $settings)) { '{}' | Set-Content -Path $settings -Encoding utf8 }
     $json = Get-Content $settings -Raw | ConvertFrom-Json
     if (-not $json.env) { $json | Add-Member -NotePropertyName env -NotePropertyValue (@{}) -Force }

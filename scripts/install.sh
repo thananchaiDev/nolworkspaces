@@ -11,16 +11,16 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REQUIRED_MARKETPLACES=(
   "thedotmack/claude-mem:thedotmack"
+  "affaan-m/everything-claude-code:everything-claude-code"
   "https://github.com/anthropics/claude-plugins-official.git:claude-plugins-official"
   "mksglu/context-mode:context-mode"
 )
 
-# NOTE: everything-claude-code is NOT a Claude plugin marketplace — it is a
-# rules repo with its own install.sh. It is installed via install_ecc_rules().
 REQUIRED_PLUGINS=(
   "claude-mem@thedotmack"
-  "superpowers@claude-plugins-official"
+  "everything-claude-code@everything-claude-code"
   "frontend-design@claude-plugins-official"
+  "superpowers@claude-plugins-official"
   "typescript-lsp@claude-plugins-official"
   "context-mode@context-mode"
 )
@@ -90,7 +90,7 @@ install_dependencies() {
       info "${name} already installed"
     else
       pending "Installing ${plugin}"
-      claude plugin install "$plugin" --scope user 2>/dev/null || warn "failed to install $plugin"
+      claude plugin install "$plugin" 2>/dev/null || warn "failed to install $plugin"
       done_
     fi
   done
@@ -116,11 +116,14 @@ install_ecc_rules() {
 configure_ecc_env() {
   step "Configuring CLAUDE_PLUGIN_ROOT"
   SETTINGS="$HOME/.claude/settings.json"
-  ECC_PLUGIN_ROOT="$HOME/.claude/ecc-source"
-  if [ ! -d "$ECC_PLUGIN_ROOT" ]; then
-    warn "ecc-source not found — skipping env config"
+  ECC_CACHE="$HOME/.claude/plugins/cache/everything-claude-code"
+  if [ ! -d "$ECC_CACHE" ]; then
+    warn "ECC plugin cache not found — skipping env config"
     return
   fi
+  ECC_ORG=$(ls "$ECC_CACHE" | head -1)
+  ECC_VER=$(ls "$ECC_CACHE/$ECC_ORG" 2>/dev/null | sort -V | tail -1)
+  ECC_PLUGIN_ROOT="$ECC_CACHE/$ECC_ORG/$ECC_VER"
   if ! command -v jq &>/dev/null; then
     warn "jq not found — skipping env config"
     return
