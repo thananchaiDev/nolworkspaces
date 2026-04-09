@@ -8,14 +8,12 @@ $ErrorActionPreference = 'Stop'
 $NolworkspacesDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else { Join-Path $HOME '.claude\nolworkspaces' }
 
 $RequiredMarketplaces = @(
-    @{ Repo = 'milla-jovovich/mempalace';                               Name = 'mempalace' }
     @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'ecc' }
     @{ Repo = 'https://github.com/anthropics/claude-plugins-official.git'; Name = 'claude-plugins-official' }
     @{ Repo = 'mksglu/context-mode';                                    Name = 'context-mode' }
 )
 
 $RequiredPlugins = @(
-    'mempalace@mempalace'
     'ecc@ecc'
     'frontend-design@claude-plugins-official'
     'superpowers@claude-plugins-official'
@@ -171,24 +169,6 @@ function Configure-EccEnv {
     Info "CLAUDE_PLUGIN_ROOT=$eccPluginRoot"
 }
 
-function Install-PythonDeps {
-    Step 'Installing Python dependencies'
-    $py = $null
-    if (Has-Cmd 'python')  { $py = 'python' }
-    elseif (Has-Cmd 'python3') { $py = 'python3' }
-    if (-not $py) { Warn 'python not found — skipping Python dependencies'; return }
-    $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
-    $check = & $py -m pip show mempalace 2>&1 | Out-String
-    $ErrorActionPreference = $prev
-    if ($check -match 'Name: mempalace') {
-        Info 'mempalace already installed'
-    } else {
-        Pending 'Installing mempalace'
-        try { & $py -m pip install --quiet mempalace 2>$null | Out-Null } catch { Warn 'failed to install mempalace' }
-        Done
-    }
-}
-
 function Install-McpServers {
     Step 'Installing MCP servers'
     if (-not (Has-Cmd 'npm')) { Fail 'npm not found. Please install Node.js and try again.' }
@@ -250,7 +230,6 @@ function Install-ClaudeStack {
     Install-Dependencies
     Install-EccRules
     Configure-EccEnv
-    Install-PythonDeps
     Install-McpServers
     Create-GlobalClaudeMd
     Write-Host ''

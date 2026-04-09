@@ -22,13 +22,11 @@ Re-run any time to update — every step is idempotent.
 ## What option 1 installs
 
 **Marketplaces**
-- `thedotmack/claude-mem`
 - `affaan-m/everything-claude-code`
 - `anthropics/claude-plugins-official`
 - `mksglu/context-mode`
 
 **Plugins**
-- `claude-mem`
 - `everything-claude-code`
 - `superpowers`
 - `frontend-design`

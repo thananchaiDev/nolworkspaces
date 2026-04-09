@@ -10,14 +10,12 @@ NOLWORKSPACES_DIR="${NOLWORKSPACES_DIR:-$HOME/.claude/nolworkspaces}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REQUIRED_MARKETPLACES=(
-  "milla-jovovich/mempalace:mempalace"
   "affaan-m/everything-claude-code:ecc"
   "https://github.com/anthropics/claude-plugins-official.git:claude-plugins-official"
   "mksglu/context-mode:context-mode"
 )
 
 REQUIRED_PLUGINS=(
-  "mempalace@mempalace"
   "ecc@ecc"
   "frontend-design@claude-plugins-official"
   "superpowers@claude-plugins-official"
@@ -134,21 +132,6 @@ configure_ecc_env() {
   info "CLAUDE_PLUGIN_ROOT=$ECC_PLUGIN_ROOT"
 }
 
-install_python_deps() {
-  step "Installing Python dependencies"
-  local py=""
-  if command -v python3 &>/dev/null; then py="python3"
-  elif command -v python &>/dev/null; then py="python"
-  else warn "python not found — skipping Python dependencies"; return; fi
-  if "$py" -m pip show mempalace &>/dev/null 2>&1; then
-    info "mempalace already installed"
-  else
-    pending "Installing mempalace"
-    "$py" -m pip install --quiet mempalace 2>/dev/null || warn "failed to install mempalace"
-    done_
-  fi
-}
-
 install_mcp_servers() {
   step "Installing MCP servers"
   if ! command -v npm &>/dev/null; then
@@ -201,7 +184,6 @@ install_claude_stack() {
   install_dependencies
   install_ecc_rules
   configure_ecc_env
-  install_python_deps
   install_mcp_servers
   create_global_claude_md
   printf "\n  ${GREEN}${BOLD}Claude Code stack installed!${NC}\n\n"
