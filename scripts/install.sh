@@ -166,8 +166,17 @@ create_global_claude_md() {
     info "CLAUDE.md already exists — skipping"
     return
   fi
-  pending "Copying CLAUDE.md"
-  cp "$SCRIPT_DIR/../templates/CLAUDE.md" "$CLAUDE_MD"
+  pending "Downloading CLAUDE.md"
+  local url="https://raw.githubusercontent.com/thananchaiDev/nolworkspaces/main/templates/CLAUDE.md"
+  if command -v curl &>/dev/null; then
+    curl -fsSL "$url" -o "$CLAUDE_MD"
+  elif command -v wget &>/dev/null; then
+    wget -qO "$CLAUDE_MD" "$url"
+  else
+    # fallback: copy from local if script was cloned
+    cp "$SCRIPT_DIR/../templates/CLAUDE.md" "$CLAUDE_MD" 2>/dev/null || \
+      { warn "Cannot download CLAUDE.md — no curl/wget and not running from a clone"; return; }
+  fi
   done_
 }
 
