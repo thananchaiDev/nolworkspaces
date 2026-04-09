@@ -87,12 +87,13 @@ fi
 echo ""
 echo "Installing pip packages..."
 PIP_PACKAGES=(
-  mempalace
+  "git+https://github.com/milla-jovovich/mempalace.git"
 )
 
 for pkg in "${PIP_PACKAGES[@]}"; do
-  if pip3 show "$pkg" &>/dev/null 2>&1; then
-    echo "  $pkg already installed"
+  pkg_name=$(echo "$pkg" | sed 's|.*[/#]||' | sed 's/\.git$//')
+  if pip3 show "$pkg_name" &>/dev/null 2>&1; then
+    echo "  $pkg_name already installed"
   else
     pip3 install "$pkg" --break-system-packages 2>/dev/null || pip3 install "$pkg"
   fi
