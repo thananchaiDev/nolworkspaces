@@ -101,7 +101,24 @@ else
 fi
 
 # --------------------------------------------------
-# 6. Claude Code CLI
+# 6. pip packages
+# --------------------------------------------------
+echo ""
+echo "Installing pip packages..."
+PIP_PACKAGES=(
+  mempalace
+)
+
+for pkg in "${PIP_PACKAGES[@]}"; do
+  if pip3 show "$pkg" &>/dev/null 2>&1; then
+    echo "  $pkg already installed"
+  else
+    pip3 install "$pkg" --break-system-packages
+  fi
+done
+
+# --------------------------------------------------
+# 7. Claude Code CLI
 # --------------------------------------------------
 if ! command -v claude &>/dev/null; then
   echo ""
@@ -112,7 +129,7 @@ else
 fi
 
 # --------------------------------------------------
-# 7. macOS defaults
+# 8. macOS defaults
 # --------------------------------------------------
 echo ""
 echo "Applying macOS defaults..."
