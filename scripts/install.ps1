@@ -112,8 +112,28 @@ function Install-EccRules {
     } else {
         Pending 'Cloning ecc-source'
         $code = Invoke-Quiet 'git' @('clone', '--depth', '1', 'https://github.com/affaan-m/everything-claude-code.git', $eccDir)
-        if ($code -ne 0) { Write-Host ''; Warn "git clone failed (exit $code) — skipping ECC rules"; return }
-        Done
+        if ($code -ne 0) {
+            Write-Host ''
+            Warn "git clone failed (exit $code) — trying plugin cache fallback"
+            # Fallback: use already-installed ecc plugin cache
+            $eccCache = Join-Path $HOME '.claude\plugins\cache\ecc'
+            $fallback = $null
+            if (Test-Path $eccCache) {
+                $org = Get-ChildItem $eccCache | Select-Object -First 1
+                if ($org) {
+                    $ver = Get-ChildItem $org.FullName | Sort-Object Name | Select-Object -Last 1
+                    if ($ver) { $fallback = $ver.FullName }
+                }
+            }
+            if ($fallback -and (Test-Path (Join-Path $fallback 'install.sh'))) {
+                $eccDir = $fallback
+                Info "Using plugin cache: $eccDir"
+            } else {
+                Warn 'No fallback found — skipping ECC rules'; return
+            }
+        } else {
+            Done
+        }
     }
     Pending 'Installing rules'
     Push-Location $eccDir
@@ -188,10 +208,22 @@ function Create-GlobalClaudeMd {
     Step 'Creating ~/.claude/CLAUDE.md'
     $claudeMd = Join-Path $HOME '.claude\CLAUDE.md'
     if (Test-Path $claudeMd) { Info 'CLAUDE.md already exists — skipping'; return }
-    Pending 'Copying CLAUDE.md'
-    $src = Join-Path $PSScriptRoot '..\templates\CLAUDE.md'
-    Copy-Item $src $claudeMd
-    Done
+    $url = 'https://raw.githubusercontent.com/thananchaiDev/nolworkspaces/main/templates/CLAUDE.md'
+    if ($PSScriptRoot -ne '') {
+        $src = Join-Path $PSScriptRoot '..\templates\CLAUDE.md'
+        if (Test-Path $src) {
+            Pending 'Copying CLAUDE.md'
+            Copy-Item $src $claudeMd
+            Done; return
+        }
+    }
+    Pending 'Downloading CLAUDE.md'
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $claudeMd -UseBasicParsing -ErrorAction Stop
+        Done
+    } catch {
+        Warn "Cannot download CLAUDE.md: $_"
+    }
 }
 
 function Install-ClaudeStack {
