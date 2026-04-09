@@ -177,8 +177,10 @@ function Install-PythonDeps {
     if (Has-Cmd 'python')  { $py = 'python' }
     elseif (Has-Cmd 'python3') { $py = 'python3' }
     if (-not $py) { Warn 'python not found — skipping Python dependencies'; return }
-    $check = & $py -m pip show mempalace 2>$null
-    if ($check) {
+    $prev = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+    $check = & $py -m pip show mempalace 2>&1 | Out-String
+    $ErrorActionPreference = $prev
+    if ($check -match 'Name: mempalace') {
         Info 'mempalace already installed'
     } else {
         Pending 'Installing mempalace'
