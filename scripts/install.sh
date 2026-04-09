@@ -10,14 +10,14 @@ NOLWORKSPACES_DIR="${NOLWORKSPACES_DIR:-$HOME/.claude/nolworkspaces}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 REQUIRED_MARKETPLACES=(
-  "milla-jovovich/mempalace:milla-jovovich"
+  "milla-jovovich/mempalace:mempalace"
   "affaan-m/everything-claude-code:ecc"
   "https://github.com/anthropics/claude-plugins-official.git:claude-plugins-official"
   "mksglu/context-mode:context-mode"
 )
 
 REQUIRED_PLUGINS=(
-  "mempalace@milla-jovovich"
+  "mempalace@mempalace"
   "ecc@ecc"
   "frontend-design@claude-plugins-official"
   "superpowers@claude-plugins-official"

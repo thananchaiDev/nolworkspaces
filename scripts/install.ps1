@@ -8,14 +8,14 @@ $ErrorActionPreference = 'Stop'
 $NolworkspacesDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else { Join-Path $HOME '.claude\nolworkspaces' }
 
 $RequiredMarketplaces = @(
-    @{ Repo = 'milla-jovovich/mempalace';                               Name = 'milla-jovovich' }
+    @{ Repo = 'milla-jovovich/mempalace';                               Name = 'mempalace' }
     @{ Repo = 'affaan-m/everything-claude-code';                        Name = 'ecc' }
     @{ Repo = 'https://github.com/anthropics/claude-plugins-official.git'; Name = 'claude-plugins-official' }
     @{ Repo = 'mksglu/context-mode';                                    Name = 'context-mode' }
 )
 
 $RequiredPlugins = @(
-    'mempalace@milla-jovovich'
+    'mempalace@mempalace'
     'ecc@ecc'
     'frontend-design@claude-plugins-official'
     'superpowers@claude-plugins-official'
