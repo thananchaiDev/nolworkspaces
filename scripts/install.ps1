@@ -171,6 +171,22 @@ function Configure-EccEnv {
     Info "CLAUDE_PLUGIN_ROOT=$eccPluginRoot"
 }
 
+function Install-PythonDeps {
+    Step 'Installing Python dependencies'
+    $py = $null
+    if (Has-Cmd 'python')  { $py = 'python' }
+    elseif (Has-Cmd 'python3') { $py = 'python3' }
+    if (-not $py) { Warn 'python not found — skipping Python dependencies'; return }
+    $check = & $py -m pip show mempalace 2>$null
+    if ($check) {
+        Info 'mempalace already installed'
+    } else {
+        Pending 'Installing mempalace'
+        try { & $py -m pip install --quiet mempalace 2>$null | Out-Null } catch { Warn 'failed to install mempalace' }
+        Done
+    }
+}
+
 function Install-McpServers {
     Step 'Installing MCP servers'
     if (-not (Has-Cmd 'npm')) { Fail 'npm not found. Please install Node.js and try again.' }
@@ -232,6 +248,7 @@ function Install-ClaudeStack {
     Install-Dependencies
     Install-EccRules
     Configure-EccEnv
+    Install-PythonDeps
     Install-McpServers
     Create-GlobalClaudeMd
     Write-Host ''

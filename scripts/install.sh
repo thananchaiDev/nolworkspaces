@@ -134,6 +134,21 @@ configure_ecc_env() {
   info "CLAUDE_PLUGIN_ROOT=$ECC_PLUGIN_ROOT"
 }
 
+install_python_deps() {
+  step "Installing Python dependencies"
+  local py=""
+  if command -v python3 &>/dev/null; then py="python3"
+  elif command -v python &>/dev/null; then py="python"
+  else warn "python not found — skipping Python dependencies"; return; fi
+  if "$py" -m pip show mempalace &>/dev/null 2>&1; then
+    info "mempalace already installed"
+  else
+    pending "Installing mempalace"
+    "$py" -m pip install --quiet mempalace 2>/dev/null || warn "failed to install mempalace"
+    done_
+  fi
+}
+
 install_mcp_servers() {
   step "Installing MCP servers"
   if ! command -v npm &>/dev/null; then
@@ -186,6 +201,7 @@ install_claude_stack() {
   install_dependencies
   install_ecc_rules
   configure_ecc_env
+  install_python_deps
   install_mcp_servers
   create_global_claude_md
   printf "\n  ${GREEN}${BOLD}Claude Code stack installed!${NC}\n\n"
