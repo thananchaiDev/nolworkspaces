@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $InstallDir = if ($env:NOLWORKSPACES_DIR) { $env:NOLWORKSPACES_DIR } else { Join-Path $HOME '.claude\nolworkspaces' }
 
 $RemovePlugins = @(
-    'claude-mem@thedotmack'
+    'mempalace@milla-jovovich'
     'ecc@ecc'
     'frontend-design@claude-plugins-official'
     'superpowers@claude-plugins-official'
@@ -18,7 +18,7 @@ $RemovePlugins = @(
 
 # NOTE: claude-plugins-official is intentionally excluded — it may be shared
 # with other plugins outside Nolworkspaces, so we leave it in place.
-$RemoveMarketplaces = @('thedotmack', 'ecc', 'context-mode')
+$RemoveMarketplaces = @('milla-jovovich', 'ecc', 'context-mode')
 
 # -- Output helpers ------------------------------------------------------------
 

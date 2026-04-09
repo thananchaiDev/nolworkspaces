@@ -10,7 +10,7 @@ INSTALL_DIR="${NOLWORKSPACES_DIR:-$HOME/.claude/nolworkspaces}"
 
 # Plugins to remove on uninstall (installed by install.sh).
 REMOVE_PLUGINS=(
-  "claude-mem@thedotmack"
+  "mempalace@milla-jovovich"
   "ecc@ecc"
   "frontend-design@claude-plugins-official"
   "superpowers@claude-plugins-official"
@@ -22,7 +22,7 @@ REMOVE_PLUGINS=(
 # NOTE: claude-plugins-official is intentionally excluded — it may be shared
 # with other plugins outside Nolworkspaces, so we leave it in place.
 REMOVE_MARKETPLACES=(
-  "thedotmack"
+  "milla-jovovich"
   "ecc"
   "context-mode"
 )
